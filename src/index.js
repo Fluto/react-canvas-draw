@@ -339,6 +339,7 @@ export default class extends PureComponent {
 
   getPointerPos = e => {
     const rect = this.canvas.interface.getBoundingClientRect();
+    var scale = this.canvas.interface.width / parseFloat(rect.width);
 
     // use cursor pos as default
     let clientX = e.clientX;
@@ -352,8 +353,8 @@ export default class extends PureComponent {
 
     // return mouse/touch position inside canvas
     return {
-      x: clientX - rect.left,
-      y: clientY - rect.top
+      x: (clientX - rect.left) * scale,
+      y: (clientY - rect.top) * scale
     };
   };
 
