@@ -301,6 +301,28 @@ export default class extends PureComponent {
     const { x, y } = this.getPointerPos(e);
     this.handlePointerMove(x, y);
   };
+  
+  handleEnter = e => {
+    if (e.buttons !== 1)
+      this.isPressing = false;
+
+    if (this.isPressing)
+      this.handleDrawStart(e);
+  };
+  
+  handleExit = e => {
+    if (!this.isPressing)
+      return;
+    
+    e.preventDefault();
+
+    // Draw to this end pos
+    this.handleDrawMove(e);
+
+    // Stop drawing & save the drawn line
+    this.isDrawing = false;
+    this.saveLine();
+  };
 
   handleDrawEnd = e => {
     e.preventDefault();
@@ -595,7 +617,8 @@ export default class extends PureComponent {
               onMouseDown={isInterface ? this.handleDrawStart : undefined}
               onMouseMove={isInterface ? this.handleDrawMove : undefined}
               onMouseUp={isInterface ? this.handleDrawEnd : undefined}
-              onMouseOut={isInterface ? this.handleDrawEnd : undefined}
+              onMouseOut={isInterface ? this.handleExit : undefined}
+              onMouseEnter={isInterface ? this.handleEnter : undefined}
               onTouchStart={isInterface ? this.handleDrawStart : undefined}
               onTouchMove={isInterface ? this.handleDrawMove : undefined}
               onTouchEnd={isInterface ? this.handleDrawEnd : undefined}
