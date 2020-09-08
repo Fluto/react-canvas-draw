@@ -391,7 +391,7 @@ export default class extends PureComponent {
   drawPoints = ({ points, brushColor, brushRadius }) => {
     this.ctx.temp.lineJoin = "round";
     this.ctx.temp.lineCap = "round";
-    this.ctx.temp.strokeStyle = brushColor;
+    this.ctx.temp.strokeStyle = brushColor || "#FFF";
 
     this.ctx.temp.clearRect(
       0,
@@ -425,10 +425,11 @@ export default class extends PureComponent {
   saveLine = ({ brushColor, brushRadius } = {}) => {
     if (this.points.length < 2) return;
 
+    let color = brushColor === undefined ? this.props.brushColor : brushColor;
     // Save as new line
     this.lines.push({
       points: [...this.points],
-      brushColor: brushColor || this.props.brushColor,
+      brushColor: color,
       brushRadius: brushRadius || this.props.brushRadius
     });
 
@@ -438,8 +439,14 @@ export default class extends PureComponent {
     const width = this.canvas.temp.width;
     const height = this.canvas.temp.height;
 
+    // if erasing
+    if (color === null)
+      this.ctx.drawing.globalCompositeOperation = "destination-out";
+
     // Copy the line to the drawing canvas
     this.ctx.drawing.drawImage(this.canvas.temp, 0, 0, width, height);
+
+    this.ctx.drawing.globalCompositeOperation = "source-over";
 
     // Clear the temporary line-drawing canvas
     this.ctx.temp.clearRect(0, 0, width, height);
